@@ -31,7 +31,7 @@ const steps: StepItem[] = [
     stepNumber: "Step 3",
     title: "Submit for Review",
     description:
-      "Submit your profile for editing. Our team reviews your listing for quality and accuracy.",
+      "Submit your business profile. Our team will review your listing for quality, accuracy and approval.",
     icon: CheckCircle2,
   },
   {
@@ -39,53 +39,62 @@ const steps: StepItem[] = [
     stepNumber: "Step 4",
     title: "Get Discovered",
     description:
-      "Your profile is now live! Sit back and enjoy the credibility and reach as clients find you.",
+      "Your business will go live. You are now discoverable by clients worldwide.",
     icon: TrendingUp,
   },
 ];
 
 export function HowItWorksSteps() {
   return (
-    <div className="relative">
+    <div className="relative rounded-b-3xl">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 relative z-10">
         {steps.map((step, idx) => {
           const Icon = step.icon;
+          const isLast = idx === steps.length - 1;
           return (
-            <div key={idx} className="flex flex-col items-center text-center relative group">
+            <div
+              key={idx}
+              className="flex flex-col items-center text-center relative group"
+            >
+              {/* Wavy dotted arrow to next step (hidden on the last item) */}
+              {!isLast && (
+                <div className="hidden lg:block absolute top-9 left-1/2 w-full pointer-events-none">
+                  <svg
+                    className="w-full h-4 text-secondary/50"
+                    viewBox="0 0 100 16"
+                    fill="none"
+                    preserveAspectRatio="none"
+                  >
+                    {/* Wavy dotted line — two smooth humps */}
+                    <path
+                      d="M14 8 C 26 0, 38 0, 50 8 S 74 16, 86 8"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeDasharray="2 3"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                    {/* Arrowhead — base sits exactly at the curve's end (86, 8) */}
+                    <path
+                      d="M86 8 L82 5 M86 8 L82 11"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                    />
+                  </svg>
+                </div>
+              )}
+
               {/* Step Circle with Step Number Pill */}
               <div className="relative mb-5">
-                <div className="w-18 h-18 rounded-full border-2 border-secondary/40 bg-accent/60 flex flex-col items-center justify-center transition-all group-hover:scale-105 group-hover:border-primary group-hover:bg-accent shadow-2xs">
+                <div className="w-18 h-18 rounded-full border-2 border-secondary/40 bg-accent/60 flex flex-col items-center justify-center transition-all shadow-2xs">
                   <span className="text-xs font-bold text-primary tracking-wider mb-0.5">
                     {step.number}
                   </span>
                   <Icon className="w-5 h-5 text-secondary group-hover:text-primary transition-colors" />
                 </div>
-
-                {/* Connecting arrow for desktop (between steps) */}
-                {idx < steps.length - 1 && (
-                  <div className="hidden lg:block absolute top-1/2 -right-12 -translate-y-1/2 w-12 text-secondary/60 pointer-events-none">
-                    <svg
-                      viewBox="0 0 50 15"
-                      fill="none"
-                      className="w-full h-auto stroke-current"
-                    >
-                      <path
-                        d="M2 10 Q 25 -3 46 8"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeDasharray="3 3"
-                        fill="none"
-                      />
-                      <path
-                        d="M42 4 L48 8 L42 12"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                )}
               </div>
 
               {/* Step Title & Badge */}

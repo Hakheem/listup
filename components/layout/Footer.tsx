@@ -1,15 +1,55 @@
 import React from "react";
 import Link from "next/link";
 import { Container } from "./Container";
+import { MapPin, Phone, Mail, ArrowRight } from "lucide-react";
 import {
-  MapPin,
-  Phone,
-  Mail,
-  ArrowRight,
-  Globe,
-  Share2
-} from "lucide-react";
-import { FaXTwitter, FaLinkedinIn, FaFacebookF, FaInstagram } from "react-icons/fa6";
+  FaXTwitter,
+  FaLinkedinIn,
+  FaFacebookF,
+  FaInstagram,
+} from "react-icons/fa6";
+import type { IconType } from "react-icons";
+
+const socialLinks: { label: string; href: string; icon: IconType }[] = [
+  { label: "Twitter", href: "https://twitter.com", icon: FaXTwitter },
+  { label: "LinkedIn", href: "https://linkedin.com", icon: FaLinkedinIn },
+  { label: "Facebook", href: "https://facebook.com", icon: FaFacebookF },
+  { label: "Instagram", href: "https://instagram.com", icon: FaInstagram },
+];
+
+const aboutLinks: { label: string; href: string }[] = [
+  { label: "About Us", href: "#about" },
+  { label: "Careers", href: "#careers" },
+  { label: "Contact Us", href: "#contact" },
+  { label: "Blog & News", href: "#blog" },
+  { label: "FAQs", href: "#faq" },
+];
+
+const quickLinks: { label: string; href: string }[] = [
+  { label: "Categories", href: "#categories" },
+  { label: "47 Counties", href: "#counties" },
+  { label: "List Your Business", href: "/signup" },
+  { label: "Privacy Policy", href: "#privacy" },
+  { label: "Terms of Service", href: "#terms" },
+];
+
+const contactDetails = [
+  {
+    icon: MapPin,
+    value: "Nairobi, Kenya (HQ) ",
+    href: null,
+  },
+  {
+    icon: Phone,
+    value: "+254 700 000 000",
+    href: "tel:+254700000000",
+  },
+  {
+    icon: Mail,
+    value: "info@listup.co.ke",
+    href: "mailto:info@listup.co.ke",
+  },
+];
 
 export function Footer() {
   return (
@@ -32,42 +72,18 @@ export function Footer() {
 
             {/* Social Icons */}
             <div className="flex items-center gap-3 pt-2">
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#00aeef] hover:text-white flex items-center justify-center text-slate-300 transition-all border border-white/10"
-                aria-label="Twitter"
-              >
-                <FaXTwitter className="w-4 h-4" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#00aeef] hover:text-white flex items-center justify-center text-slate-300 transition-all border border-white/10"
-                aria-label="LinkedIn"
-              >
-                <FaLinkedinIn className="w-4 h-4" />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#00aeef] hover:text-white flex items-center justify-center text-slate-300 transition-all border border-white/10"
-                aria-label="Facebook"
-              >
-                <FaFacebookF className="w-4 h-4" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#00aeef] hover:text-white flex items-center justify-center text-slate-300 transition-all border border-white/10"
-                aria-label="Instagram"
-              >
-                <FaInstagram className="w-4 h-4" />
-              </a>
+              {socialLinks.map(({ label, href, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-9 h-9 rounded-lg bg-white/5 hover:bg-[#00aeef] hover:text-white flex items-center justify-center text-slate-300 transition-all border border-white/10"
+                  aria-label={label}
+                >
+                  <Icon className="w-4 h-4" />
+                </a>
+              ))}
             </div>
           </div>
 
@@ -77,31 +93,16 @@ export function Footer() {
               About
             </h4>
             <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="#about" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="#careers" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="#contact" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="#blog" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  Blog & News
-                </Link>
-              </li>
-              <li>
-                <Link href="#faq" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  FAQs
-                </Link>
-              </li>
+              {aboutLinks.map(({ label, href }) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-slate-300 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -111,31 +112,16 @@ export function Footer() {
               Quick Links
             </h4>
             <ul className="space-y-2.5 text-sm">
-              <li>
-                <Link href="#categories" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  Categories
-                </Link>
-              </li>
-              <li>
-                <Link href="#counties" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  47 Counties
-                </Link>
-              </li>
-              <li>
-                <Link href="/signup" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  List Your Business
-                </Link>
-              </li>
-              <li>
-                <Link href="#privacy" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="#terms" className="text-slate-300 hover:text-white hover:underline transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
+              {quickLinks.map(({ label, href }) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-slate-300 hover:text-white transition-colors"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -145,28 +131,31 @@ export function Footer() {
               Contact Details
             </h4>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2.5 text-slate-300">
-                <MapPin className="w-4 h-4 text-[#00aeef] shrink-0 mt-0.5" />
-                <span>Nairobi, Kenya (HQ) & Nationwide</span>
-              </li>
-              <li className="flex items-center gap-2.5 text-slate-300">
-                <Phone className="w-4 h-4 text-[#00aeef] shrink-0" />
-                <a href="tel:+254700000000" className="hover:text-white transition-colors">
-                  +254 700 000 000
-                </a>
-              </li>
-              <li className="flex items-center gap-2.5 text-slate-300">
-                <Mail className="w-4 h-4 text-[#00aeef] shrink-0" />
-                <a href="mailto:info@listup.co.ke" className="hover:text-white transition-colors">
-                  info@listup.co.ke
-                </a>
-              </li>
+              {contactDetails.map(({ icon: Icon, value, href }) => (
+                <li
+                  key={value}
+                  className="flex items-center gap-2.5 text-slate-300"
+                >
+                  <Icon className="w-4 h-4 text-[#00aeef] shrink-0" />
+                  {href ? (
+                    <a
+                      href={href}
+                      className="hover:text-white transition-colors"
+                    >
+                      {value}
+                    </a>
+                  ) : (
+                    <span>{value}</span>
+                  )}
+                </li>
+              ))}
               <li className="pt-2">
                 <Link
                   href="/signup"
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-[#00aeef] hover:underline"
                 >
-                  Join our verified directory <ArrowRight className="w-3.5 h-3.5" />
+                  Join our verified directory{" "}
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </li>
             </ul>
@@ -178,7 +167,9 @@ export function Footer() {
           <p>© {new Date().getFullYear()} Listup. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span>Powered by</span>
-            <span className="font-semibold text-white">Mentor Space</span>
+            <span className="font-semibold text-white">
+              System Craft Studio
+            </span>
           </p>
         </div>
       </Container>

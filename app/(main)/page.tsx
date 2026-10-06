@@ -27,6 +27,7 @@ const featuredBusinesses: BusinessItem[] = [
       "Reliquef Eye Care is a full service optometrist clinic offering eye exams, prescription lenses, computerized testing, and personalized vision care.",
     location: "Nairobi, Kenya",
     phone: "+254 712 345 678",
+    website: "website.co.uk",
     verified: true,
   },
   {
@@ -40,6 +41,7 @@ const featuredBusinesses: BusinessItem[] = [
       "Premier legal consultancy providing strategic corporate and commercial advisory, compliance, real estate conveyancing, and dispute resolution across East Africa.",
     location: "Mombasa, Kenya",
     phone: "+254 722 987 654",
+    website: "website.co.ke",
     verified: true,
   },
   {
@@ -53,6 +55,7 @@ const featuredBusinesses: BusinessItem[] = [
       "Enterprise IT infrastructure, cyber security services, cloud migration and managed hosting solutions helping modern Kenyan companies operate seamlessly.",
     location: "Kisumu, Kenya",
     phone: "+254 733 456 789",
+    website: "website.com",
     verified: true,
   },
 ];
@@ -81,7 +84,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[580px] lg:min-h-[640px] flex items-center bg-slate-900 text-white overflow-hidden">
+      <section className="relative min-h-[500px] lg:min-h-[600px] flex items-center bg-slate-900 text-white overflow-hidden">
         {/* Background Image */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-50 mix-blend-luminosity scale-105 transform transition-transform duration-1000"
@@ -92,18 +95,18 @@ export default function HomePage() {
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-950/40 via-slate-900/50 to-slate-950/65" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-950/40 via-slate-900/50 to-slate-950/55" />
 
         <Container className="relative z-10 py-16 w-full flex flex-col justify-between space-y-8">
           <div className="max-w-3xl space-y-6">
-            <h1 className="text-4xl md:text-5xl font-semibold leading-[1.15] text-gray-100">
+            <h1 className="text-4xl md:text-5xl font-bold leading-[1.2] text-gray-100">
               Turn Your Presence <br />
               <span className="text-secondary">Into Opportunity</span> <br />
               with Us.
             </h1>
 
-            <p className="text-base sm:text-lg text-gray-400 leading-relaxed max-w-2xl font-normal drop-shadow-xs">
-              Showcase what yo do, get discoveredby the right people and turn
+            <p className="text-base sm:text-lg text-gray-200 leading-relaxed max-w-xl font-normal drop-shadow-xs">
+              Showcase what you do, get discoveredby the right people and turn
               your visibility intoeaningful connections, clients and growth.
             </p>
 
@@ -112,13 +115,13 @@ export default function HomePage() {
               <Link href="#how-it-works">
                 <Button
                   variant="outline"
-                  className=" text-white  h-12 px-6 text-sm font-semibold backdrop-blur-xs"
+                  className=" text-white border-none outline-none h-12 px-6 hover:text-white text-sm font-semibold"
                 >
                   Learn More
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button className=" text-white h-12 px-6 text-sm font-semibold shadow-md">
+                <Button className=" text-white h-12 px-6 text-sm font-semibold">
                   Get Started
                 </Button>
               </Link>
@@ -136,12 +139,12 @@ export default function HomePage() {
       <StatsCounter />
 
       {/* 3. HOW IT WORKS SECTION */}
-      <section id="how-it-works" className="py-20 sm:py-24 bg-background">
+      <section id="how-it-works" className="py-20 rounded-b-3xl bg-background">
         <Container>
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14 pb-4 border-b border-border/60">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent text-primary text-xs font-semibold mb-2">
-                <Sparkles className="w-3.5 h-3.5 text-secondary" />
+                {/* <Sparkles className="w-3.5 h-3.5 text-secondary" /> */}
                 <span>Simple 4-Step Process</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
@@ -165,17 +168,10 @@ export default function HomePage() {
       </section>
 
       {/* 4. FEATURED BUSINESS SECTION */}
-      <section
-        id="businesses"
-        className="py-20 bg-muted/60 border-t border-border/80"
-      >
+      <section id="businesses" className="py-16 bg-muted/60 ">
         <Container>
           <div className="flex items-end justify-between gap-4 mb-10">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent text-primary text-xs font-semibold mb-2">
-                <Building className="w-3.5 h-3.5 text-secondary" />
-                <span>Top Rated</span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
                 Featured Business
               </h2>
@@ -188,7 +184,7 @@ export default function HomePage() {
 
             <Link
               href="#businesses"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-secondary transition-colors shrink-0"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-secondary hover:text-primary transition-colors shrink-0"
             >
               <span>See All</span>
               <ArrowRight className="w-4 h-4" />
@@ -211,10 +207,6 @@ export default function HomePage() {
         <Container>
           <div className="flex items-end justify-between gap-4 mb-10">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent text-primary text-xs font-semibold mb-2">
-                <MapPin className="w-3.5 h-3.5 text-secondary" />
-                <span>Regional Coverage</span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
                 Find Business by Location
               </h2>
@@ -225,7 +217,7 @@ export default function HomePage() {
 
             <Link
               href="#counties"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-secondary transition-colors shrink-0"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-secondary hover:text-primary transition-colors shrink-0"
             >
               <span>See All</span>
               <ArrowRight className="w-4 h-4" />
@@ -241,7 +233,7 @@ export default function HomePage() {
       </section>
 
       {/* 6. PROMO CTA BANNER 1 */}
-      <section className="py-12 bg-background">
+      <section className="py-10 bg-background">
         <Container>
           <OwnBusinessBanner />
         </Container>
@@ -251,7 +243,7 @@ export default function HomePage() {
       <PricingSection />
 
       {/* 8. PROMO CTA BANNER 2 */}
-      <section className="py-16 bg-muted/40 border-t border-border/80">
+      <section className="py-16 bg-muted/40 ">
         <Container>
           <DatabaseBanner />
         </Container>

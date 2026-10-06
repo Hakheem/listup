@@ -19,9 +19,6 @@ export function CountyCard({ county }: CountyCardProps) {
       className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-card hover:border-secondary hover:bg-accent/40 transition-all group shadow-2xs"
     >
       <div className="flex items-center gap-3">
-        <span className="w-6 h-6 rounded-md bg-muted text-muted-foreground text-xs font-bold flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-          {county.number}
-        </span>
         <div className="flex items-center gap-1.5 text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
           <MapPin className="w-3.5 h-3.5 text-secondary" />
           <span>{county.name}</span>

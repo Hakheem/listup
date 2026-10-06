@@ -10,7 +10,8 @@ import {
   GraduationCap,
   Users,
   Truck,
-  MoreHorizontal
+  MoreHorizontal,
+  Mop,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,19 +22,19 @@ interface Category {
 }
 
 const categories: Category[] = [
-  { id: "construction", name: "Construction", icon: HardHat },
-  { id: "cleaners", name: "Cleaners", icon: Sparkles },
-  { id: "shopping", name: "Shopping", icon: ShoppingBag },
   { id: "legal", name: "Legal", icon: Scale },
-  { id: "data-center", name: "Data Center", icon: Server },
+  { id: "construction", name: "Construction", icon: HardHat },
   { id: "education", name: "Education", icon: GraduationCap },
-  { id: "leadership", name: "Leadership", icon: Users },
+  { id: "shopping", name: "Shopping", icon: ShoppingBag },
   { id: "logistics", name: "Logistics", icon: Truck },
+  { id: "data-center", name: "Data Center", icon: Server },
+  { id: "cleaners", name: "Cleaners", icon: Mop },
+  { id: "leadership", name: "Leadership", icon: Users },
   { id: "all", name: "See All", icon: MoreHorizontal },
 ];
 
 export function CategoryBar() {
-  const [selectedId, setSelectedId] = useState<string>("construction");
+  // const [selectedId, setSelectedId] = useState<string>("construction");
 
   return (
     <div className="w-full space-y-3">
@@ -44,25 +45,27 @@ export function CategoryBar() {
       <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 sm:gap-2.5 w-full">
         {categories.map((cat) => {
           const Icon = cat.icon;
-          const isSelected = selectedId === cat.id;
+          // const isSelected = selectedId === cat.id;
           return (
             <button
               key={cat.id}
-              onClick={() => setSelectedId(cat.id)}
+              // onClick={() => setSelectedId(cat.id)}
               className={cn(
-                "flex flex-col items-center justify-center w-full py-3 px-2 rounded-xl transition-all border text-xs font-medium gap-2 backdrop-blur-xs",
-                isSelected
-                  ? "bg-primary/90 border-secondary text-primary-foreground shadow-lg ring-1 ring-secondary"
-                  : "bg-white/10 border-white/20 text-white/90 hover:bg-white/20 hover:border-white/40"
+                "flex flex-col items-center justify-center w-full py-3 px-2 rounded-lg transition-all border text-xs font-medium gap-2 backdrop-blur-xs",
+                // isSelected
+                //   ? "bg-primary/90 border-secondary text-primary-foreground shadow-md ring-1 ring-secondary"
+                //   : "bg-white/10 border-white/20 text-white/90 hover:bg-white/20 hover:border-white/40",
+                "bg-white/10 border-white/20 text-white/90 hover:bg-white/20 hover:border-white/40",
               )}
             >
               <div
                 className={cn(
-                  "p-1.5 rounded-lg transition-colors",
-                  isSelected ? "bg-secondary text-secondary-foreground" : "bg-white/10 text-white"
+                  "p-1.5 transition-colors",
+                  // isSelected ? " text-secondary-foreground" : " text-white",
+                  "text-white",
                 )}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-5 h-5" />
               </div>
               <span className="truncate w-full text-center text-[11px] sm:text-xs">
                 {cat.name}

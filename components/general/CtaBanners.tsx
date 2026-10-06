@@ -1,7 +1,16 @@
 import React from "react";
 import Link from "next/link";
-import { Check, ArrowRight, ShieldCheck, Database, Building2, Users } from "lucide-react";
+import {
+  Check,
+  ArrowRight,
+  ShieldCheck,
+  Database,
+  Building2,
+  Users,
+  Plus,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "../ui/badge";
 
 export function OwnBusinessBanner() {
   return (
@@ -12,17 +21,20 @@ export function OwnBusinessBanner() {
             <Check className="w-3.5 h-3.5 text-secondary" />
             <span>For All Businesses</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary tracking-tight leading-tight">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary leading-tight">
             Own a Business in Kenya? <br />
             <span className="text-secondary">Get it Listed Today</span>
           </h2>
           <p className="text-sm sm:text-base text-foreground/80 max-w-lg leading-relaxed">
-            Join 124,262+ businesses reaching millions of ready buyers across all 47 counties in Kenya. Boost your SEO, generate verified customer reviews, and receive inquiries.
+            Join 124,262+ businesses reaching new clients across all 47 counties
+            in Kenya. Boost your SEO, generate verified customer reviews, and
+            receive inquiries.
           </p>
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link href="/signup">
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs px-6 h-11">
-                List My Business — For Free
+              <Button className="bg-gradient-to-br from-primary to-secondary hover:opacity-90 text-primary-foreground font-semibold rounded-md shadow-xs px-6 h-11">
+                <Plus className="h-4 w-4 text-white" />
+                Get My Free Listing
               </Button>
             </Link>
             <Link href="#pricing">
@@ -44,8 +56,12 @@ export function OwnBusinessBanner() {
                 <Building2 className="w-5 h-5 text-secondary" />
               </div>
               <div className="flex-1">
-                <div className="text-xs font-bold text-foreground">Verified Local Enterprise</div>
-                <div className="text-[11px] text-muted-foreground">SEO Indexing • Direct WhatsApp Leads</div>
+                <div className="text-xs font-bold text-foreground">
+                  Verified Local Enterprise
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  SEO Indexing • Direct WhatsApp Leads
+                </div>
               </div>
               <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
                 Active
@@ -57,8 +73,12 @@ export function OwnBusinessBanner() {
                 <ShieldCheck className="w-5 h-5 text-white" />
               </div>
               <div className="flex-1">
-                <div className="text-xs font-bold text-foreground">Listed Business Get Visibility</div>
-                <div className="text-[11px] text-muted-foreground">Top Ranking in Google & Local Search</div>
+                <div className="text-xs font-bold text-foreground">
+                  Listed Business Get Visibility
+                </div>
+                <div className="text-[11px] text-muted-foreground">
+                  Top Ranking in Google & Local Search
+                </div>
               </div>
               <span className="text-xs font-bold text-primary bg-accent px-2 py-0.5 rounded-full">
                 +350% Reach
@@ -76,16 +96,22 @@ export function DatabaseBanner() {
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-accent via-sky-50 to-accent/80 p-8 sm:p-12 border border-secondary/30 shadow-2xs">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <div className="lg:col-span-7 space-y-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent text-primary text-xs font-semibold">
+          <Badge
+            variant="outline"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent text-primary text-xs shadow-sm font-semibold"
+          >
             <Database className="w-3.5 h-3.5 text-secondary" />
             <span>National Business Directory</span>
-          </div>
+          </Badge>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-primary tracking-tight leading-tight">
             Access Kenya&apos;s Most Complete <br />
             <span className="text-secondary">Business Database</span>
           </h2>
           <p className="text-sm sm:text-base text-foreground/80 max-w-lg leading-relaxed">
-            Access 124,262+ verified businesses, contacts, and services across all 47 counties. Filter by industry sector, geographical location, ratings, and verified credentials.
+            Access <span className="text-gray-900">124,262+ </span> verified
+            businesses, contacts, and services across all 47 counties. Filter by
+            industry sector, geographical location, ratings, and verified
+            credentials.
           </p>
           <div className="pt-2">
             <Link href="#businesses">
@@ -105,8 +131,12 @@ export function DatabaseBanner() {
                   <Users className="w-5 h-5 text-secondary" />
                 </div>
                 <div>
-                  <div className="text-xs font-bold text-foreground">124,262+ Records</div>
-                  <div className="text-[11px] text-muted-foreground">Updated daily with verified contacts</div>
+                  <div className="text-xs font-bold text-foreground">
+                    124,262+ Records
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Updated daily with verified contacts
+                  </div>
                 </div>
               </div>
             </div>

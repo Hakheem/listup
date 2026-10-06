@@ -14,7 +14,7 @@ export function Header() {
 
   const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Business", href: "#businesses" },
+    { label: "Business", href: "/businesses" },
     { label: "Jobs", href: "/jobs" },
     { label: "Professionals", href: "/professionals" },
     { label: "Data Hub", href: "/data-hub" },
@@ -53,8 +53,8 @@ export function Header() {
                   aria-current={active ? "page" : undefined}
                   className={`p-2 text-sm transition-colors ${
                     active
-                      ? "text-cyan-400"
-                      : "text-muted-foreground hover:text-cyan-400"
+                      ? "text-secondary"
+                      : "text-muted-foreground hover:text-secondary"
                   }`}
                 >
                   {link.label}
@@ -76,7 +76,7 @@ export function Header() {
               </Link>
 
               <Link href="#">
-                <Button className="text-primary-foreground shadow-xs font-semibold px-3 transition-all hover:shadow-md">
+                <Button className="text-primary-foreground font-semibold px-3 transition-all ">
                   <Plus className="w-4 h-4 mr-1" />
                   Add New Listing
                 </Button>
