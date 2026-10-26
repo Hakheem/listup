@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TestimonialCarousel } from "@/components/general/TestimonialCarousel";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 
 interface AuthFormProps {
   initialTab?: "signin" | "signup";
@@ -50,6 +51,7 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [serverSuccess, setServerSuccess] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   // Mark field as touched
   const handleBlur = (field: string) => {
@@ -123,14 +125,13 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
     return errs;
   }, [activeTab, fullName, email, password, confirmPassword, agreeTerms, isPasswordValid]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setServerError(null);
+    setServerSuccess(null);
 
-    // Mark all relevant fields as touched
-    const allTouched: Record<string, boolean> = {
-      email: true,
-      password: true,
-    };
+    // Mark all fields as touched for validation display
+    const allTouched: Record<string, boolean> = { email: true, password: true };
     if (activeTab === "signup") {
       allTouched.fullName = true;
       allTouched.confirmPassword = true;
@@ -138,29 +139,61 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
     }
     setTouched(allTouched);
 
-    if (Object.keys(errors).length > 0) {
-      return;
+    if (Object.keys(errors).length > 0) return;
+
+    setIsLoading(true);
+
+    if (activeTab === "signup") {
+      const { error } = await authClient.signUp.email({
+        name: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        password,
+        callbackURL: `/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`,
+      });
+
+      if (error) {
+        setServerError(error.message ?? "Sign up failed. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
+      // better-auth sends the OTP automatically (sendVerificationOnSignUp: true)
+      setServerSuccess("Account created! Redirecting to email verification…");
+      setTimeout(() => {
+        router.push(`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+      }, 1000);
+    } else {
+      const { error } = await authClient.signIn.email({
+        email: email.trim().toLowerCase(),
+        password,
+        callbackURL: "/",
+      });
+
+      if (error) {
+        setServerError(error.message ?? "Sign in failed. Check your credentials.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Middleware will handle redirect based on role + OTP/onboarding state
+      setServerSuccess("Signed in! Redirecting…");
+      router.push("/");
     }
 
-    setIsLoading(true);
-    // Simulate auth action
-    setTimeout(() => {
-      setIsLoading(false);
-      setServerSuccess(
-        activeTab === "signin"
-          ? "Signed in successfully! Redirecting to dashboard..."
-          : "Account created successfully! Verification email sent."
-      );
-    }, 1200);
+    setIsLoading(false);
   };
 
-  const handleGoogleAuth = () => {
+  const handleGoogleAuth = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setServerSuccess("Redirecting to Google Authentication...");
-    }, 800);
+    setServerError(null);
+    await authClient.signIn.social({
+      provider: "google",
+      // After OAuth callback, middleware routes new users to /verify-email
+      callbackURL: "/verify-email",
+    });
+    // signIn.social triggers a full-page redirect — no need to setIsLoading(false)
   };
+
 
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row bg-slate-50">
@@ -287,6 +320,14 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
             <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{serverSuccess}</span>
+            </div>
+          )}
+
+          {/* Server Error Alert */}
+          {serverError && (
+            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs sm:text-sm flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <span>{serverError}</span>
             </div>
           )}
 

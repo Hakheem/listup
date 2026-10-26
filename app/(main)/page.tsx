@@ -87,15 +87,13 @@ export default function HomePage() {
       <section className="relative min-h-[500px] lg:min-h-[600px] flex items-center bg-slate-900 text-white overflow-hidden">
         {/* Background Image */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-50 mix-blend-luminosity scale-105 transform transition-transform duration-1000"
-          style={{
-            backgroundImage:
-              'url("https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1600&auto=format&fit=crop&q=80")',
-          }}
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-50 scale-105 transform transition-transform duration-1000"
+        style={{
+    backgroundImage: 'url("/heroImage.png")'}}
         />
 
         {/* Overlay */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-slate-950/40 via-slate-900/50 to-slate-950/55" />
+    <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-950/90 via-slate-900/50 to-slate-950/0" />
 
         <Container className="relative z-10 py-16 w-full flex flex-col justify-between space-y-8">
           <div className="max-w-3xl space-y-6">
