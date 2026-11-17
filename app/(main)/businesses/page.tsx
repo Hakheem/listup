@@ -2,160 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { Container } from "@/components/layout/Container";
 import Image from "next/image";
-import { Building2, MapPin, Search, Sparkles, Plus, ArrowRight } from "lucide-react";
+import { MapPin, Search, Plus, ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { categories, type Category } from "@/lib/data/categories";
+import { OwnBusinessStrip } from "@/components/general/OwnBusinessStrip";
 
-type Category = {
-  slug: string;
-  name: string;
-  description: string;
-  count: string;
-  image: string;
-};
-
-const categories: Category[] = [
-  {
-    slug: "shopping",
-    name: "Shopping",
-    description: "Retail shops, ecommerce & product outlets",
-    count: "8.6k",
-    image: "/images/categories/shopping.png",
-  },
-  {
-    slug: "marketing",
-    name: "Marketing",
-    description: "Advertising agencies, branding & growth professionals",
-    count: "6.1k",
-    image: "/images/categories/marketing.png",
-  },
-  {
-    slug: "travel",
-    name: "Travel",
-    description: "Tours, hotels and safaris",
-    count: "540",
-    image: "/images/categories/travel.png",
-  },
-  {
-    slug: "transport",
-    name: "Transport",
-    description: "Logistics and cabs",
-    count: "720",
-    image: "/images/categories/transport.png",
-  },
-  {
-    slug: "education",
-    name: "Education",
-    description: "Schools, colleges and universities",
-    count: "1.2k",
-    image: "/images/categories/education.png",
-  },
-  {
-    slug: "automotive",
-    name: "Automotive",
-    description: "Car dealers, garages and auto parts",
-    count: "430",
-    image: "/images/categories/automotive.png",
-  },
-  {
-    slug: "construction",
-    name: "Construction",
-    description: "Building companies and contractors",
-    count: "1.8k",
-    image: "/images/categories/construction.png",
-  },
-  {
-    slug: "home-services",
-    name: "Home Services",
-    description: "Plumbers, electricians and cleaners",
-    count: "2.3k",
-    image: "/images/categories/home-services.png",
-  },
-  {
-    slug: "sports-fitness",
-    name: "Sports & Fitness",
-    description: "Gyms, trainers and sports clubs",
-    count: "1.5k",
-    image: "/images/categories/sports-fitness.png",
-  },
-  {
-    slug: "consulting",
-    name: "Consulting",
-    description: "Business and management consultants",
-    count: "1.1k",
-    image: "/images/categories/consulting.png",
-  },
-  {
-    slug: "business-services",
-    name: "Business Services",
-    description: "Accounting, legal and IT services",
-    count: "2.0k",
-    image: "/images/categories/business-services.png",
-  },
-  {
-    slug: "legal",
-    name: "Legal",
-    description: "Law firms and legal advisors",
-    count: "900",
-    image: "/images/categories/legal.png",
-  },
-  {
-    slug: "manufacturing",
-    name: "Manufacturing",
-    description: "Factories and production companies",
-    count: "1.4k",
-    image: "/images/categories/manufacturing.png",
-  },
-  {
-    slug: "wholesale",
-    name: "Wholesale",
-    description: "B2B suppliers and distributors",
-    count: "1.7k",
-    image: "/images/categories/wholesale.png",
-  },
-  {
-    slug: "agriculture",
-    name: "Agriculture",
-    description: "Farms and agricultural services",
-    count: "1.1k",
-    image: "/images/categories/agriculture.png",
-  },
-  {
-    slug: "energy",
-    name: "Energy",
-    description: "Power generation and utilities",
-    count: "1.6k",
-    image: "/images/categories/energy.png",
-  },
-  {
-    slug: "entertainment",
-    name: "Entertainment",
-    description: "Movies, music and gaming",
-    count: "1.3k",
-    image: "/images/categories/entertainment.png",
-  },
-  {
-    slug: "service-providers",
-    name: "Service Providers",
-    description: "Software, hardware and IT services",
-    count: "2.1k",
-    image: "/images/categories/service-providers.png",
-  },
-  {
-    slug: "public-figures",
-    name: "Public Figures",
-    description: "Celebrities, influencers and public personalities",
-    count: "1.0k",
-    image: "/images/categories/public-figures.png",
-  },
-  {
-    slug: "miscellaneous",
-    name: "Miscellaneous",
-    description: "Other businesses and services",
-    count: "1.9k",
-    image: "/images/categories/miscellaneous.png",
-  },
-];
 
 function CategoryGrid({ items }: { items: Category[] }) {
   return (
@@ -171,34 +23,15 @@ function CategoryGrid({ items }: { items: Category[] }) {
             />
           </div>
           <h3 className="mt-3 font-semibold">{cat.name}</h3>
-          <p className="text-sm text-muted-foreground">{cat.description}</p>
-          <p className="text-xs text-secondary">{cat.count} businesses</p>
+          <p className="mt-1 line-clamp-2 min-h-10 text-sm text-muted-foreground">{cat.description}</p>
+<p className="mt-1 text-xs text-secondary">{cat.count} businesses</p>
         </Link>
       ))}
     </div>
   );
 }
 
-function OwnBusinessStrip() {
-  return (
-    <div className="my-10 flex flex-col gap-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-3">
-        <div className="flex size-9 items-center justify-center rounded-lg bg-emerald-100">
-          <Sparkles className="size-4 text-emerald-600" />
-        </div>
-        <div>
-          <p className="text-sm font-semibold">Own a business in this category?</p>
-          <p className="text-xs text-muted-foreground">
-            Get listed and reach customers searching for your services.
-          </p>
-        </div>
-      </div>
-      <Link href="/signup">
-        <Button size="sm">List Your Business</Button>
-      </Link>
-    </div>
-  );
-}
+
 
 const bannerCards = [
   {
@@ -291,6 +124,7 @@ function ListedTodayBanner() {
   );
 }
   
+const visibleCategories = categories.filter((c) => !c.hidden);
 
 const BusinessesPage = () => {
   return (
@@ -327,9 +161,11 @@ const BusinessesPage = () => {
 
         
         <div className="mt-12">
-          <CategoryGrid items={categories.slice(0, 8)} />
+          <CategoryGrid items={visibleCategories.slice(0, 8)} />
+          <div className="my-10">
           <OwnBusinessStrip />
-          <CategoryGrid items={categories.slice(8)} />
+          </div>
+          <CategoryGrid items={visibleCategories.slice(8)} />
 <ListedTodayBanner />
         </div>
       </Container>
