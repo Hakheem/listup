@@ -16,17 +16,23 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const { data: session, isPending: isSessionLoading } = authClient.useSession();
 
+  const isAlreadySentOnSignUp = searchParams.get("sent") === "true";
   const [email, setEmail] = useState<string>(() => searchParams.get("email") ?? "");
   const [digits, setDigits] = useState<string[]>(Array(OTP_LENGTH).fill(""));
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(() =>
+    isAlreadySentOnSignUp
+      ? `A 6-digit code has been sent to ${searchParams.get("email") || "your email"}`
+      : null
+  );
   const [success, setSuccess] = useState(false);
-  const [cooldown, setCooldown] = useState(0);
+  const [cooldown, setCooldown] = useState(() => (isAlreadySentOnSignUp ? RESEND_COOLDOWN : 0));
 
   const inputRefs = useRef<Array<HTMLInputElement | null>>(Array(OTP_LENGTH).fill(null));
-  const hasSentInitialOtp = useRef(false);
+  // If already sent during signup, don't trigger duplicate OTP dispatch on mount
+  const hasSentInitialOtp = useRef(isAlreadySentOnSignUp);
 
   // Sync email from search params or active session (essential for Google OAuth users)
   useEffect(() => {
@@ -45,7 +51,7 @@ function VerifyEmailContent() {
     return () => clearInterval(id);
   }, [cooldown]);
 
-  // Auto-send OTP once email is resolved
+  // Auto-send OTP once email is resolved (only if NOT already dispatched on signup)
   useEffect(() => {
     if (!email || hasSentInitialOtp.current) return;
     hasSentInitialOtp.current = true;

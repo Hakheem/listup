@@ -148,7 +148,7 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
         name: fullName.trim(),
         email: email.trim().toLowerCase(),
         password,
-        callbackURL: `/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`,
+        callbackURL: `/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&sent=true`,
       });
 
       if (error) {
@@ -160,7 +160,7 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
       // better-auth sends the OTP automatically (sendVerificationOnSignUp: true)
       setServerSuccess("Account created! Redirecting to email verification…");
       setTimeout(() => {
-        router.push(`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+        router.push(`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&sent=true`);
       }, 1000);
     } else {
       const { error } = await authClient.signIn.email({

@@ -1,19 +1,37 @@
 import nodemailer from "nodemailer";
 
 /**
- * Nodemailer transporter.
- * Fill in the SMTP_ env vars in .env — works with Gmail App Passwords,
- * Mailtrap, Brevo, Resend's SMTP bridge, etc.
+ * Creates a Nodemailer transporter configured for serverless resilience.
+ * - Auto-detects SSL on port 465 vs STARTTLS on port 587.
+ * - Sets explicit timeouts so serverless functions (e.g. Vercel) don't hang.
+ * - Disables pooling to avoid stale socket reuse in Lambda containers.
  */
-export const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT ?? 587),
-  secure: process.env.SMTP_SECURE === "true", // true for 465, false for 587/25
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
+export function getTransporter() {
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT ?? 587);
+  // Auto-detect secure: true for 465, false for 587/25 unless SMTP_SECURE is explicitly set
+  const secure =
+    process.env.SMTP_SECURE !== undefined
+      ? process.env.SMTP_SECURE === "true"
+      : port === 465;
+
+  return nodemailer.createTransport({
+    host,
+    port,
+    secure,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+    // Serverless-friendly connection timeouts (Vercel kills after 10-15s)
+    connectionTimeout: 10000, // 10s
+    greetingTimeout: 7000,    // 7s
+    socketTimeout: 15000,     // 15s
+    pool: false,              // don't maintain persistent pools across cold/warm lambdas
+  });
+}
+
+export const transporter = getTransporter();
 
 interface SendOTPOptions {
   to: string;
@@ -46,16 +64,100 @@ const bodyMap: Record<SendOTPOptions["type"], string> = {
     "Use the code below to confirm your new email address. It expires in 10 minutes.",
 };
 
+/**
+ * Send an email using Resend's REST API over HTTPS.
+ * Highly recommended for serverless environments (Vercel) because HTTPS (port 443)
+ * is never blocked by cloud firewalls or data center IP restrictions.
+ */
+async function sendViaResend({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  const fromAddress =
+    process.env.RESEND_FROM ??
+    process.env.SMTP_FROM ??
+    "Listup <onboarding@resend.dev>";
+
+  console.log(`[Email] Attempting delivery via Resend HTTP API to ${to} (from ${fromAddress})...`);
+
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromAddress,
+      to: [to],
+      subject,
+      html,
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Resend HTTP API failed (${res.status}): ${errText}`);
+  }
+
+  const data = await res.json();
+  console.log(`[Email] Successfully delivered via Resend. ID: ${data.id}`);
+  return data;
+}
+
+/**
+ * Send an email using standard Nodemailer SMTP.
+ */
+async function sendViaSMTP({
+  to,
+  subject,
+  html,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  if (!process.env.SMTP_HOST) {
+    throw new Error(
+      "[Email Error] SMTP_HOST is not configured in environment variables."
+    );
+  }
+
+  const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!fromEmail) {
+    throw new Error(
+      "[Email Error] Missing SMTP_FROM or SMTP_USER in environment variables."
+    );
+  }
+
+  const from = `"Listup" <${fromEmail}>`;
+  const transport = getTransporter();
+
+  console.log(
+    `[Email] Attempting delivery via SMTP (${process.env.SMTP_HOST}:${process.env.SMTP_PORT ?? 587}) to ${to} (from ${from})...`
+  );
+
+  const info = await transport.sendMail({
+    from,
+    to,
+    subject,
+    html,
+  });
+
+  console.log(`[Email] Successfully delivered via SMTP to ${to}. MessageId: ${info.messageId}`);
+  return info;
+}
+
 export async function sendOTPEmail({ to, otp, type }: SendOTPOptions) {
   const subject = subjectMap[type];
   const heading = headingMap[type];
   const body = bodyMap[type];
 
-  await transporter.sendMail({
-    from: `"Listup" <${process.env.SMTP_FROM ?? process.env.SMTP_USER}>`,
-    to,
-    subject,
-    html: `
+  const html = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,6 +208,56 @@ export async function sendOTPEmail({ to, otp, type }: SendOTPOptions) {
   </table>
 </body>
 </html>
-    `.trim(),
-  });
+  `.trim();
+
+  // ---------------------------------------------------------------------------
+  // Case 1: RESEND_API_KEY is configured
+  // Try Resend first. If it fails, fall back to Nodemailer SMTP.
+  // ---------------------------------------------------------------------------
+  if (process.env.RESEND_API_KEY) {
+    try {
+      await sendViaResend({ to, subject, html });
+      return;
+    } catch (resendError: unknown) {
+      const resendMsg =
+        resendError instanceof Error ? resendError.message : String(resendError);
+      console.warn(`[Email Warning] Resend attempt failed: ${resendMsg}`);
+
+      // If SMTP is also configured, attempt fallback
+      if (process.env.SMTP_HOST) {
+        console.log("[Email] Falling back to Nodemailer SMTP...");
+        try {
+          await sendViaSMTP({ to, subject, html });
+          console.log("[Email] Fallback to SMTP succeeded!");
+          return;
+        } catch (smtpError: unknown) {
+          const smtpMsg =
+            smtpError instanceof Error ? smtpError.message : String(smtpError);
+          console.error(`[Email Error] SMTP fallback also failed: ${smtpMsg}`);
+          throw new Error(
+            `Email delivery failed via both Resend and SMTP fallback. Resend error: ${resendMsg} | SMTP error: ${smtpMsg}`
+          );
+        }
+      }
+
+      // No SMTP configured to fall back to
+      throw resendError;
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Case 2: No RESEND_API_KEY provided -> Use Nodemailer SMTP directly
+  // ---------------------------------------------------------------------------
+  if (process.env.SMTP_HOST) {
+    await sendViaSMTP({ to, subject, html });
+    return;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Case 3: Neither provider is configured
+  // ---------------------------------------------------------------------------
+  const missingMsg =
+    "[Email Error] No email provider configured! Please set RESEND_API_KEY or SMTP_HOST in your environment variables.";
+  console.error(missingMsg);
+  throw new Error(missingMsg);
 }

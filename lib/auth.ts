@@ -13,9 +13,26 @@ export const auth = betterAuth({
   }),
 
   // -------------------------------------------------------------------------
-  // Base URL
+  // Base URL & Trusted Origins
+  // Dynamically supports local development, custom production domain, and Vercel preview URLs
   // -------------------------------------------------------------------------
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+  baseURL:
+    process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000"),
+  trustedOrigins: [
+    "http://localhost:3000",
+    process.env.BETTER_AUTH_URL,
+    process.env.NEXT_PUBLIC_APP_URL,
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]
+      : []),
+  ].filter(Boolean) as string[],
   secret: process.env.BETTER_AUTH_SECRET!,
 
   // -------------------------------------------------------------------------
@@ -50,7 +67,7 @@ export const auth = betterAuth({
       storeOTP: "hashed",                   // secure OTP storage
       rateLimit: {
         window: 60,                         // 1-minute window
-        max: 3,                             // max 3 OTP requests per minute
+        max: 5,                             // max 5 OTP requests per minute
       },
       async sendVerificationOTP({ email, otp, type }) {
         try {
