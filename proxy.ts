@@ -101,12 +101,22 @@ export async function proxy(req: NextRequest) {
   }
 
   // Retrieve session by querying the auth endpoint with forwarded cookies
+  // Use explicit environment URL if behind Render/Vercel reverse proxies
+  const authBaseUrl =
+    process.env.BETTER_AUTH_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    req.nextUrl.origin;
+
   const { data: session } = await betterFetch<SessionData>("/api/auth/get-session?disableCookieCache=true", {
-    baseURL: req.nextUrl.origin,
+    baseURL: authBaseUrl,
     headers: {
       cookie: req.headers.get("cookie") || "",
     },
-  }).catch(() => ({ data: null }));
+  }).catch((err) => {
+    console.warn("[Proxy] get-session fetch warning:", err?.message || err);
+    return { data: null };
+  });
 
   const user = session?.user;
 

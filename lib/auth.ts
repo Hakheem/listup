@@ -14,11 +14,12 @@ export const auth = betterAuth({
 
   // -------------------------------------------------------------------------
   // Base URL & Trusted Origins
-  // Dynamically supports local development, custom production domain, and Vercel preview URLs
+  // Dynamically supports local development, custom domain, Render, and Vercel preview URLs
   // -------------------------------------------------------------------------
   baseURL:
     process.env.BETTER_AUTH_URL ||
     process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
       : process.env.VERCEL_URL
@@ -28,6 +29,7 @@ export const auth = betterAuth({
     "http://localhost:3000",
     process.env.BETTER_AUTH_URL,
     process.env.NEXT_PUBLIC_APP_URL,
+    process.env.RENDER_EXTERNAL_URL,
     ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
     ...(process.env.VERCEL_PROJECT_PRODUCTION_URL
       ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`]

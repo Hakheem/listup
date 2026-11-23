@@ -127,14 +127,15 @@ async function sendViaSMTP({
     );
   }
 
-  const fromEmail = process.env.SMTP_FROM || process.env.SMTP_USER;
-  if (!fromEmail) {
+  const rawFrom = process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!rawFrom) {
     throw new Error(
       "[Email Error] Missing SMTP_FROM or SMTP_USER in environment variables."
     );
   }
 
-  const from = `"Listup" <${fromEmail}>`;
+  // Ensure clean "Display Name <email@domain.com>" format without duplicate brackets
+  const from = rawFrom.includes("<") ? rawFrom : `"Listup" <${rawFrom}>`;
   const transport = getTransporter();
 
   console.log(
@@ -211,45 +212,46 @@ export async function sendOTPEmail({ to, otp, type }: SendOTPOptions) {
   `.trim();
 
   // ---------------------------------------------------------------------------
-  // Case 1: RESEND_API_KEY is configured
-  // Try Resend first. If it fails, fall back to Nodemailer SMTP.
+  // Case 1: SMTP_HOST is configured (PRIMARY)
+  // Try Nodemailer SMTP first. Can deliver to ANY recipient without domain restriction.
+  // If it fails or is blocked on live hosts, fall back to Resend HTTP API.
   // ---------------------------------------------------------------------------
-  if (process.env.RESEND_API_KEY) {
+  if (process.env.SMTP_HOST) {
     try {
-      await sendViaResend({ to, subject, html });
+      await sendViaSMTP({ to, subject, html });
       return;
-    } catch (resendError: unknown) {
-      const resendMsg =
-        resendError instanceof Error ? resendError.message : String(resendError);
-      console.warn(`[Email Warning] Resend attempt failed: ${resendMsg}`);
+    } catch (smtpError: unknown) {
+      const smtpMsg =
+        smtpError instanceof Error ? smtpError.message : String(smtpError);
+      console.warn(`[Email Warning] Primary SMTP attempt failed: ${smtpMsg}`);
 
-      // If SMTP is also configured, attempt fallback
-      if (process.env.SMTP_HOST) {
-        console.log("[Email] Falling back to Nodemailer SMTP...");
+      // If Resend is also configured, attempt fallback
+      if (process.env.RESEND_API_KEY) {
+        console.log("[Email] Falling back to Resend HTTP API as backup...");
         try {
-          await sendViaSMTP({ to, subject, html });
-          console.log("[Email] Fallback to SMTP succeeded!");
+          await sendViaResend({ to, subject, html });
+          console.log("[Email] Backup delivery via Resend succeeded!");
           return;
-        } catch (smtpError: unknown) {
-          const smtpMsg =
-            smtpError instanceof Error ? smtpError.message : String(smtpError);
-          console.error(`[Email Error] SMTP fallback also failed: ${smtpMsg}`);
+        } catch (resendError: unknown) {
+          const resendMsg =
+            resendError instanceof Error ? resendError.message : String(resendError);
+          console.error(`[Email Error] Resend fallback also failed: ${resendMsg}`);
           throw new Error(
-            `Email delivery failed via both Resend and SMTP fallback. Resend error: ${resendMsg} | SMTP error: ${smtpMsg}`
+            `Email delivery failed via both SMTP and Resend backup. SMTP error: ${smtpMsg} | Resend error: ${resendMsg}`
           );
         }
       }
 
-      // No SMTP configured to fall back to
-      throw resendError;
+      // No Resend configured to fall back to
+      throw smtpError;
     }
   }
 
   // ---------------------------------------------------------------------------
-  // Case 2: No RESEND_API_KEY provided -> Use Nodemailer SMTP directly
+  // Case 2: No SMTP_HOST provided -> Use Resend HTTP API directly
   // ---------------------------------------------------------------------------
-  if (process.env.SMTP_HOST) {
-    await sendViaSMTP({ to, subject, html });
+  if (process.env.RESEND_API_KEY) {
+    await sendViaResend({ to, subject, html });
     return;
   }
 
@@ -257,7 +259,7 @@ export async function sendOTPEmail({ to, otp, type }: SendOTPOptions) {
   // Case 3: Neither provider is configured
   // ---------------------------------------------------------------------------
   const missingMsg =
-    "[Email Error] No email provider configured! Please set RESEND_API_KEY or SMTP_HOST in your environment variables.";
+    "[Email Error] No email provider configured! Please set SMTP_HOST or RESEND_API_KEY in your environment variables.";
   console.error(missingMsg);
   throw new Error(missingMsg);
 }

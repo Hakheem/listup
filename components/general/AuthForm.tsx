@@ -37,9 +37,12 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
     tabFromQuery || initialTab
   );
 
+  const isVerifiedFromQuery = searchParams.get("verified") === "true";
+  const emailFromQuery = searchParams.get("email") ?? "";
+
   // Form State
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => emailFromQuery);
   const [businessName, setBusinessName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -50,7 +53,11 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [serverSuccess, setServerSuccess] = useState<string | null>(null);
+  const [serverSuccess, setServerSuccess] = useState<string | null>(() =>
+    isVerifiedFromQuery
+      ? "Email verified successfully! Please sign in with your password to continue."
+      : null
+  );
   const [serverError, setServerError] = useState<string | null>(null);
 
   // Mark field as touched
@@ -144,6 +151,12 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
     setIsLoading(true);
 
     if (activeTab === "signup") {
+      // Temporarily store password in sessionStorage so the user can be automatically
+      // signed in immediately after OTP verification without getting stuck on login
+      try {
+        sessionStorage.setItem("listup_pending_pass", password);
+      } catch {}
+
       const { error } = await authClient.signUp.email({
         name: fullName.trim(),
         email: email.trim().toLowerCase(),
@@ -163,10 +176,11 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
         router.push(`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&sent=true`);
       }, 1000);
     } else {
+      const callbackUrl = searchParams.get("callbackUrl") || "/";
       const { error } = await authClient.signIn.email({
         email: email.trim().toLowerCase(),
         password,
-        callbackURL: "/",
+        callbackURL: callbackUrl,
       });
 
       if (error) {
@@ -177,7 +191,7 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
 
       // Middleware will handle redirect based on role + OTP/onboarding state
       setServerSuccess("Signed in! Redirecting…");
-      router.push("/");
+      router.push(callbackUrl);
     }
 
     setIsLoading(false);

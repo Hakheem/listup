@@ -21,12 +21,12 @@ export async function GET(req: NextRequest) {
     },
     emailConfig: {
       strategy:
-        process.env.RESEND_API_KEY && process.env.SMTP_HOST
-          ? "Resend (Primary) with Nodemailer SMTP (Fallback)"
-          : process.env.RESEND_API_KEY
-          ? "Resend (HTTP API only)"
+        process.env.SMTP_HOST && process.env.RESEND_API_KEY
+          ? "Nodemailer SMTP (Primary) with Resend HTTP API (Backup)"
           : process.env.SMTP_HOST
           ? "Nodemailer SMTP only"
+          : process.env.RESEND_API_KEY
+          ? "Resend HTTP API only"
           : "None configured",
       resendConfigured: Boolean(process.env.RESEND_API_KEY),
       resendFrom: process.env.RESEND_FROM ?? "Listup <onboarding@resend.dev> (default)",

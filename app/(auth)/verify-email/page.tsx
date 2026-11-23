@@ -145,9 +145,32 @@ function VerifyEmailContent() {
         body: JSON.stringify({ email }),
       }).catch(console.error);
 
+      // Automatically sign in the user if password was retained from signup in this tab
+      let signedIn = false;
+      try {
+        const savedPass = sessionStorage.getItem("listup_pending_pass");
+        if (savedPass) {
+          const signInRes = await authClient.signIn.email({
+            email,
+            password: savedPass,
+          });
+          if (!signInRes.error) {
+            signedIn = true;
+            sessionStorage.removeItem("listup_pending_pass");
+          }
+        }
+      } catch (err) {
+        console.warn("[VerifyEmail] Auto-signin error:", err);
+      }
+
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = "/onboarding";
+        if (signedIn) {
+          window.location.href = "/onboarding";
+        } else {
+          // Fallback if password was not in memory (e.g. verified on another device)
+          window.location.href = `/login?verified=true&email=${encodeURIComponent(email)}&callbackUrl=%2Fonboarding`;
+        }
       }, 1000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Verification failed";
