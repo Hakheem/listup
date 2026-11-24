@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
-import { Star, MapPin, Globe } from "lucide-react";
+import { MapPin, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { RatingStars } from "@/components/general/RatingStars";
 
 export interface BusinessItem {
   id: string;
@@ -19,9 +20,10 @@ export interface BusinessItem {
 
 interface BusinessCardProps {
   business: BusinessItem;
+  href?: string;
 }
 
-export function BusinessCard({ business }: BusinessCardProps) {
+export function BusinessCard({ business, href }: BusinessCardProps) {
   return (
     <div className="bg-card rounded-2xl border border-border p-5 flex flex-col justify-between shadow-2xs hover:shadow-lg hover:border-secondary/60 transition-all group">
       <div>
@@ -45,7 +47,7 @@ export function BusinessCard({ business }: BusinessCardProps) {
         {/* Rating */}
         <div className="flex items-center gap-1.5 my-2.5 text-xs">
           <div className="flex items-center text-amber-500">
-            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+            <RatingStars rating={business.rating} />
           </div>
           <span className="font-bold text-foreground">
             {business.rating.toFixed(1)}
@@ -61,9 +63,9 @@ export function BusinessCard({ business }: BusinessCardProps) {
         </p>
       </div>
 
-      {/* Meta details and Actions */}
+      
       <div className="pt-3 border-t border-border/60">
-        {/* Location & Website */}
+        
         <div className="flex flex-row items-start gap-4 text-xs mb-4">
           {/* Location */}
           <div className="flex flex-col gap-0.5 min-w-0 flex-1">
@@ -112,7 +114,7 @@ export function BusinessCard({ business }: BusinessCardProps) {
               Get Direction
             </Button>
           </a>
-          <Link href={`#business-${business.id}`} className="w-full">
+          <Link href={href ?? `#business-${business.id}`} className="w-full">
             <Button
               size="sm"
               className="w-full text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground"
