@@ -151,8 +151,7 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
     setIsLoading(true);
 
     if (activeTab === "signup") {
-      // Temporarily store password in sessionStorage so the user can be automatically
-      // signed in immediately after OTP verification without getting stuck on login
+      // Temporarily store the password so the user can be signed in after OTP verification.
       try {
         sessionStorage.setItem("listup_pending_pass", password);
       } catch {}
@@ -184,12 +183,18 @@ export function AuthForm({ initialTab = "signin" }: AuthFormProps) {
       });
 
       if (error) {
-        setServerError(error.message ?? "Sign in failed. Check your credentials.");
+        if (error.code === "EMAIL_NOT_VERIFIED" || (error.message && error.message.toLowerCase().includes("not verified"))) {
+          // Redirect to verification page and inform the user
+          setServerError("Please verify your email. A verification code has been sent.");
+          router.push(`/verify-email?email=${encodeURIComponent(email.trim().toLowerCase())}&sent=true`);
+        } else {
+          setServerError(error.message ?? "Sign in failed. Check your credentials.");
+        }
         setIsLoading(false);
         return;
       }
 
-      // Middleware will handle redirect based on role + OTP/onboarding state
+      // Middleware handles redirects based on role and onboarding state.
       setServerSuccess("Signed in! Redirecting…");
       router.push(callbackUrl);
     }
