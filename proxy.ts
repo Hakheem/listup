@@ -35,12 +35,14 @@ const ROLE_ROUTES: Record<string, string[]> = {
 // Routes that are completely public (no auth needed)
 const PUBLIC_PATHS = [
   "/",
+  "/*",
   "/login",
   "/signup",
   "/verify-email",
   "/contact",
   "/professionals",
   "/businesses",
+  "/faq",
   "/jobs",          // public listing page (GET), portal is /jobs/* with auth
 ];
 
